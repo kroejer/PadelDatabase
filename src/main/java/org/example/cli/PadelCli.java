@@ -42,7 +42,7 @@ public class PadelCli {
                     default -> System.out.println("Vælg fra 0 til 8.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Alder/id skal være et positivt heltal, og niveau skal være et tal mellem 1 og 7.");
+                System.out.println("Alder/id skal være et positivt heltal");
             } catch (IllegalArgumentException | UnsupportedOperationException e) {
                 System.out.println(e.getMessage());
             } catch (SQLException e) {
