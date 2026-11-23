@@ -1,5 +1,6 @@
 package org.example.cli;
 
+import org.example.model.PadelBat;
 import org.example.model.PadelPlayer;
 import org.example.service.PadelService;
 
@@ -21,8 +22,8 @@ public class PadelCli {
             System.out.println("\n---Padel Database Menu---" +
                     "\n1. Se liste af padel spillere" +
                     "\n2. Tilføj spiller" +
-                    "\n3. Ret spiller level" +
-                    "\n4. Ret spillers padel bat" +
+                    "\n3. Opdater spiller nivea" +
+                    "\n4. Ret spillers padelbat" +
                     "\n5. Slet spiller" +
                     "\n6. Se liste af padel bats" +
                     "\n7. Tilføj padel bat" +
@@ -32,13 +33,13 @@ public class PadelCli {
                 switch (ask("Vælg")) {
                     case "1" -> showPlayers();
                     case "2" -> addPlayer();
-                    //case "3" -> changePlayerLevel();
-                    //case "4" -> changePlayerBat();
-                    //case "5" -> deletePlayer();
-                    //case "6" -> showBats();
-                    //case "7" -> addBat();
-                    //case "8" -> deleteBat();
-                    //case "0" -> { return; }
+                    case "3" -> changePlayerLevel();
+                    case "4" -> changePlayerBat();
+                    case "5" -> deletePlayer();
+                    case "6" -> showBats();
+                    case "7" -> addBat();
+                    case "8" -> deleteBat();
+                    case "0" -> { return; }
                     default -> System.out.println("Vælg fra 0 til 8.");
                 }
             } catch (NumberFormatException e) {
@@ -71,6 +72,58 @@ public class PadelCli {
         Integer padelBatId = Integer.parseInt(ask("Padel bat id"));
         service.addPlayer(name, age, level, club, padelBatId);
         System.out.println("Spilleren er gemt.");
+    }
+
+    public void changePlayerLevel() throws SQLException {
+        Integer playerId = Integer.parseInt(ask("Indtast ID på spilleren som skal have ændret niveau"));
+        Double newLevel = Double.parseDouble(ask("Spillerens nye niveau"));
+        service.changePlayerLevel(playerId, newLevel);
+        System.out.println("Spillerens niveau er opdateret");
+    }
+
+    public void changePlayerBat() throws SQLException {
+        Integer playerId = Integer.parseInt(ask("Indtast ID på spilleren der skal have ændret padelbat"));
+        Integer batId = Integer.parseInt(ask("Indtast ID for det nye padelbat"));
+        service.changePlayerBat(playerId, batId);
+        System.out.println("Spillerens padelbat er opdateret");
+    }
+
+    public void deletePlayer() throws SQLException {
+        Integer playerId = Integer.parseInt(ask("Indtast ID på spilleren der skal slettes"));
+        boolean deleted = service.deletePlayer(playerId);
+        if (deleted) {
+            System.out.println("Spilleren er slettet.");
+        } else {
+            System.out.println("Spilleren findes ikke.");
+        }
+    }
+
+    public void showBats() throws SQLException {
+        List<PadelBat> padelBatList = service.findBats();
+        if (padelBatList.isEmpty()) {
+            System.out.println("Ingen padel spillere i listen.");
+        }
+        for (PadelBat bat : padelBatList) {
+            System.out.printf("%d | %s | %s | %s%n", bat.getId(), bat.getModel(), bat.getBrand(), bat.getForm());
+        }
+    }
+
+    public void addBat() throws SQLException {
+        String model = ask("Indtast modelnavn");
+        String brand = ask("Indtast brandnavn");
+        String form = ask("Indtast form");
+        service.addBat(model,brand,form);
+        System.out.println("Padelbattet er gemt!");
+    }
+
+    public void deleteBat() throws SQLException {
+        Integer batId = Integer.parseInt(ask("Indtast ID på det padelbat der skal slettes"));
+        boolean deleted = service.deleteBat(batId);
+        if (deleted) {
+            System.out.println("Padelbattet er slettet.");
+        } else {
+            System.out.println("Padelbattet findes ikke.");
+        }
     }
 
     private String ask(String prompt) {
